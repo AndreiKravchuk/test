@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DZ11_KravchukAndrei</title>
+</head>
+<body>
+    <div>
+        <label for="input_text">Введите слово:</label>
+        <input id="input_text" type="text" >
+        <button>Получить значения!</button>
+    </div>
+    <br>
+    <table width="600px" border="1px solid">
+        <tr>
+            <td width="150px">Ваше слово:</td>
+            <td class="word"></td>
+        </tr>
+        <tr>
+            <td>Транскрипция:</td>
+            <td class="phonetic"></td>
+        </tr>
+        <tr>
+            <td>noun:</td>
+            <td class="noun"></td>
+        </tr>
+        <tr>
+            <td>verb:</td>
+            <td class="verb"></td>
+        </tr>
+        <tr>
+            <td>adjective:</td>
+            <td class="adjective"></td>
+        </tr>
+    </table>
+<script>
+
+let input = document.querySelector('#input_text');
+let button = document.querySelector('button');
+let word = document.querySelector('.word');
+let phonetic = document.querySelector('.phonetic');
+let noun = document.querySelector('.noun');
+let verb = document.querySelector('.verb');
+let adjective = document.querySelector('.adjective');
+
+
+button.addEventListener("click", function() {
+
+    fetch(`https://api.dictionaryapi.dev/api/v2/entries/en/${input.value}?`)
+    .then(res => res.json())
+    .then(words => {
+        word.innerHTML = words[0].word;
+        phonetic.innerHTML = words[0].phonetic;
+        
+        let meanings = words[0].meanings;
+        let nounDefinition;
+        let verbDefinition;
+        let adjectiveDefinition;
+        let nounExample;
+        let verbExample;
+        let adjectiveExample;
+        let nounSynonyms;
+        let verbSynonyms;
+        let adjectiveSynonyms;
+        let nounAntonyms;
+        let verbAntonyms;
+        let adjectiveAntonyms;
+
+
+        for(let i = 0; i < meanings.length; i++) {
+                if (meanings[i].partOfSpeech === "noun") {
+                    nounDefinition = meanings[i].definitions[0].definition;
+                    nounSynonyms = meanings[i].synonyms;
+                    nounAntonyms = meanings[i].antonyms;
+                    nounExample = meanings[i].definitions[0].example;
+                } else if (meanings[i].partOfSpeech === "verb") {
+                    verbDefinition = meanings[i].definitions[0].definition;
+                    verbSynonyms = meanings[i].synonyms;
+                    verbAntonyms = meanings[i].antonyms;
+                    verbExample = meanings[i].definitions[0].example;
+                } else if (meanings[i].partOfSpeech === "adjective") {
+                    adjectiveDefinition = meanings[i].definitions[0].definition;
+                    adjectiveSynonyms = meanings[i].synonyms;
+                    adjectiveAntonyms = meanings[i].antonyms;
+                    adjectiveExample = meanings[i].definitions[0].example;
+                }
+        }
+
+        if (nounDefinition === undefined) {
+            return
+        } else {
+            noun.innerHTML = `Определение: ${nounDefinition}<br>
+            Синоним: ${nounSynonyms}<br>
+            Антоним: ${nounAntonyms}<br>
+            Пример: ${nounExample}`;
+        }
+        
+        if (verbDefinition === undefined) {
+            return
+        } else {
+            verb.innerHTML = `Определение: ${verbDefinition}<br>
+            Синоним: ${verbSynonyms}<br>
+            Антоним: ${verbAntonyms}<br>
+            Пример: ${verbExample}`;
+       }
+        
+        if(adjectiveDefinition === undefined) {
+            return
+        } else {
+            adjective.innerHTML = `Определение: ${adjectiveDefinition}<br>
+            Синоним: ${adjectiveSynonyms}<br>
+            Антоним: ${adjectiveAntonyms}<br>
+            Пример: ${adjectiveExample}`;
+        }
+    })
+    .catch(error => {
+        alert(`Введенное слово: "${input.value}" не существует!`)
+        input.value = "";
+    })
+})
+        
+</script>
+</body>
+</html>
+
+
